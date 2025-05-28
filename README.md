@@ -23,12 +23,37 @@ cd sentiment-analysis
 
 # Install dependencies
 pip install -r requirements.txt
-
-# Download NLTK data (jika diperlukan)
-python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
 ```
 
-### 2. Persiapan Dataset
+### 2. Setup NLTK Data (PENTING!)
+
+**Pilihan A - Setup Otomatis (Recommended):**
+```bash
+python setup_nltk.py
+```
+
+**Pilihan B - Setup Manual:**
+```python
+import nltk
+import ssl
+
+# Handle SSL issues (jika ada)
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
+# Download required data
+nltk.download('punkt')
+nltk.download('punkt_tab')
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('averaged_perceptron_tagger')
+```
+
+### 3. Persiapan Dataset
 
 Pastikan file `Dataset.csv` tersedia dengan struktur kolom:
 - `userName`: Nama pengguna
@@ -37,13 +62,66 @@ Pastikan file `Dataset.csv` tersedia dengan struktur kolom:
 - `at`: Tanggal ulasan
 - `appVersion`: Versi aplikasi
 
-### 3. Menjalankan Aplikasi
+### 4. Menjalankan Aplikasi
 
+**Pilihan A - Startup Script (Recommended):**
+```bash
+python run_app.py
+```
+
+**Pilihan B - Direct Streamlit:**
 ```bash
 streamlit run streamlit_app.py
 ```
 
 Aplikasi akan berjalan di `http://localhost:8501`
+
+## 🛠️ Troubleshooting
+
+### Masalah NLTK Data
+
+Jika Anda mendapat error seperti:
+```
+Resource punkt_tab not found. Please use the NLTK Downloader...
+```
+
+**Solusi:**
+1. Jalankan `python setup_nltk.py`
+2. Atau jalankan setup manual di atas
+3. Restart aplikasi
+
+### Masalah SSL Certificate
+
+Jika download NLTK gagal karena SSL:
+```python
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+```
+
+### Masalah Return Statement
+
+Jika Anda mendapat error:
+```
+"return" can be used only within a function
+```
+
+**Solusi:**
+1. Jalankan fix script: `python fix_app.py`
+2. Atau ganti `return` dengan `st.stop()` dalam Streamlit
+3. Restructure code dengan if-else blocks
+
+### Masalah Button Duplicate ID
+
+Jika ada error duplicate button ID:
+```
+StreamlitDuplicateElementId: Multiple button elements with same ID
+```
+
+**Solusi:**
+Tambahkan unique `key` parameter:
+```python
+st.button("Text", key="unique_key_name")
+```
 
 ## 📁 Struktur Project
 

@@ -631,17 +631,233 @@ elif selected_menu == "📊 Visualisasi Dataset":
     # Sentiment by time (if date column exists)
     if 'at' in df.columns:
         st.subheader("📅 Trend Sentimen dari Waktu ke Waktu")
+        
+        # Debug info ekspander
+        with st.expander("🔍 Debug Info - Data Tanggal"):
+            st.write("**Informasi kolom 'at':**")
+            st.write(f"- Data type: {df['at'].dtype}")
+            st.write(f"- Missing values: {df['at'].isnull().sum()}")
+            st.write(f"- Total rows: {len(df)}")
+            
+            # Show sample values
+            if 'at' in df.columns:
+                st.write("**Sample values (first 10):**")
+                sample_values = df['at'].dropna().head(10)
+                for i, val in enumerate(sample_values):
+                    st.write(f"{i+1}. `{val}` (type: {type(val).__name__})")
+                
+                # Show unique date formats
+                unique_formats = df['at'].dropna().astype(str).apply(lambda x: len(x)).value_counts()
+                st.write("**String length distribution:**")
+                st.write(unique_formats)
+        
         try:
-            df['date'] = pd.to_datetime(df['at'])
-            df['month_year'] = df['date'].dt.to_period('M')
+            # Step 1: Data cleaning
+            df_time = df.copy()
+            df_time = df_time.dropna(subset=['at'])
             
-            sentiment_time = df.groupby(['month_year', 'sentiment']).size().unstack(fill_value=0)
+            if len(df_time) == 0:
+                st.warning("❌ Tidak ada data tanggal yang valid")
+            else:
+                st.info(f"📊 Processing {len(df_time)} rows with date data...")
             
-            fig_time = px.line(sentiment_time, title="Trend Sentimen Bulanan")
-            fig_time.update_layout(height=400)
-            st.plotly_chart(fig_time, use_container_width=True)
-        except:
-            st.info("Tidak dapat memproses data tanggal")
+            # Step 2: Multiple date parsing attempts
+            parsing_success = False
+            parsed_dates = None
+            error_msgs = []
+            
+            # Method 1: Standard parsing
+            try:
+                parsed_dates = pd.to_datetime(df_time['at'])
+                parsing_success = True
+                st.success("✅ Method 1: Standard parsing berhasil")
+            except Exception as e:
+                error_msgs.append(f"Method 1 failed: {str(e)}")
+                
+                # Method 2: Infer format
+                try:
+                    parsed_dates = pd.to_datetime(df_time['at'], infer_datetime_format=True)
+                    parsing_success = True
+                    st.success("✅ Method 2: Infer format berhasil")
+                except Exception as e2:
+                    error_msgs.append(f"Method 2 failed: {str(e2)}")
+                    
+                    # Method 3: Common formats
+                    common_formats = [
+                        '%Y-%m-%d %H:%M:%S',
+                        '%Y-%m-%d',
+                        '%d/%m/%Y %H:%M:%S',
+                        '%d/%m/%Y',
+                        '%m/%d/%Y %H:%M:%S',
+                        '%m/%d/%Y',
+                        '%d-%m-%Y %H:%M:%S',
+                        '%d-%m-%Y'
+                    ]
+                    
+                    for fmt in common_formats:
+                        try:
+                            parsed_dates = pd.to_datetime(df_time['at'], format=fmt)
+                            parsing_success = True
+                            st.success(f"✅ Method 3: Format '{fmt}' berhasil")
+                            break
+                        except:
+                            continue
+                    
+                    if not parsing_success:
+                        # Method 4: Coerce errors (last resort)
+                        try:
+                            parsed_dates = pd.to_datetime(df_time['at'], errors='coerce')
+                            valid_dates = parsed_dates.notna()
+                            if valid_dates.sum() > 0:
+                                parsing_success = True
+                                st.warning(f"⚠️ Method 4: Coerce errors - {valid_dates.sum()}/{len(parsed_dates)} dates valid")
+                            else:
+                                st.error("❌ All date parsing methods failed")
+                        except Exception as e4:
+                            error_msgs.append(f"Method 4 failed: {str(e4)}")
+            
+            if parsing_success and parsed_dates is not None:
+                # Apply parsed dates
+                df_time['date'] = parsed_dates
+                
+                # Remove invalid dates (NaT)
+                df_time = df_time[df_time['date'].notna()]
+                
+                if len(df_time) == 0:
+                    st.error("❌ Semua tanggal tidak valid setelah parsing")
+                else:
+                    st.info(f"📅 Successfully parsed {len(df_time)} valid dates")
+                    
+                    # Step 3: Create time features
+                    df_time['month_year'] = df_time['date'].dt.to_period('M')
+                    df_time['year'] = df_time['date'].dt.year
+                    df_time['month'] = df_time['date'].dt.month
+                    df_time['weekday'] = df_time['date'].dt.day_name()
+                    
+                    # Step 4: Group by time and sentiment
+                    sentiment_time = df_time.groupby(['month_year', 'sentiment']).size().unstack(fill_value=0)
+                    
+                    if sentiment_time.empty:
+                        st.warning("❌ Tidak ada data untuk trend sentimen")
+                    else:
+                        # Step 5: Create visualization
+                        # Convert PeriodIndex to string for plotting
+                        sentiment_time_plot = sentiment_time.copy()
+                        sentiment_time_plot.index = sentiment_time_plot.index.astype(str)
+                        
+                        # Reset index for plotly
+                        plot_data = sentiment_time_plot.reset_index()
+                        
+                        # Melt data for plotly
+                        plot_data_melted = plot_data.melt(
+                            id_vars=['month_year'], 
+                            var_name='sentiment', 
+                            value_name='count'
+                        )
+                        
+                        # Create line plot
+                        fig_time = px.line(
+                            plot_data_melted,
+                            x='month_year',
+                            y='count',
+                            color='sentiment',
+                            title="📈 Trend Sentimen Bulanan",
+                            labels={
+                                'month_year': 'Bulan-Tahun',
+                                'count': 'Jumlah Review',
+                                'sentiment': 'Sentimen'
+                            }
+                        )
+                        
+                        fig_time.update_layout(
+                            height=500,
+                            xaxis_tickangle=45,
+                            legend=dict(
+                                orientation="h",
+                                yanchor="bottom",
+                                y=1.02,
+                                xanchor="right",
+                                x=1
+                            )
+                        )
+                        
+                        st.plotly_chart(fig_time, use_container_width=True)
+                        
+                        # Step 6: Summary statistics
+                        st.subheader("📊 Statistik Trend")
+                        
+                        col1, col2, col3, col4 = st.columns(4)
+                        
+                        with col1:
+                            date_range = f"{df_time['date'].min().strftime('%Y-%m-%d')}"
+                            st.metric("Tanggal Mulai", date_range)
+                        
+                        with col2:
+                            date_range = f"{df_time['date'].max().strftime('%Y-%m-%d')}"
+                            st.metric("Tanggal Akhir", date_range)
+                        
+                        with col3:
+                            total_months = len(sentiment_time)
+                            st.metric("Total Bulan", total_months)
+                        
+                        with col4:
+                            avg_per_month = df_time.groupby('month_year').size().mean()
+                            st.metric("Rata-rata Review/Bulan", f"{avg_per_month:.1f}")
+                        
+                        # Step 7: Monthly breakdown table
+                        st.subheader("📋 Detail per Bulan")
+                        
+                        # Create summary table
+                        monthly_summary = df_time.groupby('month_year').agg({
+                            'sentiment': 'count',
+                            'date': ['min', 'max']
+                        }).round(1)
+                        
+                        monthly_summary.columns = ['Total Reviews', 'First Date', 'Last Date']
+                        monthly_summary.index = monthly_summary.index.astype(str)
+                        
+                        # Add sentiment breakdown
+                        sentiment_breakdown = df_time.groupby(['month_year', 'sentiment']).size().unstack(fill_value=0)
+                        sentiment_breakdown.index = sentiment_breakdown.index.astype(str)
+                        
+                        # Combine tables
+                        combined_summary = pd.concat([monthly_summary, sentiment_breakdown], axis=1)
+                        st.dataframe(combined_summary, use_container_width=True)
+                        
+                        # Step 8: Additional insights
+                        st.subheader("🔍 Insights Tambahan")
+                        
+                        # Most active month
+                        most_active = df_time.groupby('month_year').size().idxmax()
+                        most_active_count = df_time.groupby('month_year').size().max()
+                        
+                        # Sentiment trends
+                        positive_trend = sentiment_time.get('positive', pd.Series()).mean()
+                        negative_trend = sentiment_time.get('negative', pd.Series()).mean()
+                        neutral_trend = sentiment_time.get('neutral', pd.Series()).mean()
+                        
+                        col1, col2 = st.columns(2)
+                        
+                        with col1:
+                            st.info(f"📈 **Bulan Paling Aktif:** {most_active} ({most_active_count} reviews)")
+                            st.info(f"🎯 **Rata-rata Positive:** {positive_trend:.1f} reviews/bulan")
+                        
+                        with col2:
+                            st.info(f"📉 **Rata-rata Negative:** {negative_trend:.1f} reviews/bulan")
+                            st.info(f"😐 **Rata-rata Neutral:** {neutral_trend:.1f} reviews/bulan")
+                
+            else:
+                st.error("❌ Gagal memparse tanggal dengan semua metode")
+                st.error("**Error messages:**")
+                for msg in error_msgs:
+                    st.write(f"- {msg}")
+                    
+        except Exception as e:
+            st.error(f"❌ Error memproses data tanggal: {str(e)}")
+            import traceback
+            st.code(traceback.format_exc())
+    else:
+        st.info("ℹ️ Kolom tanggal 'at' tidak ditemukan dalam dataset")
     
     # Text length analysis
     st.subheader("📏 Analisis Panjang Teks")
@@ -814,7 +1030,7 @@ elif selected_menu == "📝 Text Analysis":
     
     # Analyze button
     analyze_clicked = st.button("🔍 Analisis Sentimen", type="primary", key="analyze_text_btn")
-
+    
     if analyze_clicked:
         if input_text.strip():
             with st.spinner("Menganalisis..."):
@@ -1002,16 +1218,7 @@ elif selected_menu == "ℹ️ Tentang":
     st.header("ℹ️ Tentang Sistem")
     
     st.markdown("""
-    ## Tugas UAS Sistem Analisis Sentimen Indonesia
-    
-    # Dibuat oleh kelompok 3
-    ### 1	Akhmad Aditya Rachman	223020503085
-    ### 2	Natalio Valentino	223020503115
-    ### 3	Adi Kristianto	223020503127
-    ### 4	Achmad Kahlil Gibran	223020503137
-    ### 5	Aditya Heru Saputra	223020503149
-    ### 6	Andika Fikri Maulana	223020503153
-    ### 7	Muhammad Afrizal 	223020503159      
+    ## 🎯 Sistem Analisis Sentimen Indonesia
     
     ### 📋 Deskripsi
     Sistem ini merupakan aplikasi web untuk melakukan analisis sentimen pada teks berbahasa Indonesia secara otomatis. 

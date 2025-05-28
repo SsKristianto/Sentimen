@@ -105,20 +105,101 @@ class SentimentAnalysisSystem:
         """Automatically label sentiment based on keywords and patterns"""
         text_lower = text.lower()
         
-        # Positive keywords
+        # Positive keywords (diperluas berdasarkan analisis dataset)
         positive_words = [
+            # Kata dasar positif
             'bagus', 'baik', 'suka', 'senang', 'puas', 'mantap', 'oke', 'ok',
             'recommended', 'rekomendasi', 'top', 'keren', 'asik', 'asyik',
             'love', 'like', 'good', 'great', 'excellent', 'amazing', 'awesome',
-            'hebat', 'luar biasa', 'sempurna', 'memuaskan', 'terbaik'
+            'hebat', 'luar biasa', 'sempurna', 'memuaskan', 'terbaik',
+            
+            # Kata positif spesifik untuk layanan transportasi/delivery
+            'cepat', 'tepat waktu', 'responsif', 'ramah', 'sopan', 'profesional',
+            'membantu', 'terbantu', 'bermanfaat', 'mudah', 'praktis', 'efisien',
+            'nyaman', 'aman', 'amanah', 'terpercaya', 'reliable', 'lancar',
+            'smooth', 'gercep', 'sigap', 'mantul', 'jos', 'gandos',
+            
+            # Kata apresiasi dan kepuasan
+            'terima kasih', 'thanks', 'makasih', 'appreciate', 'grateful',
+            'sukses', 'success', 'berhasil', 'perfect', 'nice', 'cool',
+            'mantabs', 'mantaap', 'mantabb', 'kece', 'juara', 'champion',
+            
+            # Kata yang menunjukkan loyalitas
+            'setia', 'loyal', 'andalkan', 'favorit', 'pilihan', 'unggulan',
+            'the best', 'terdepan', 'nomor satu', 'juara', 'winner',
+            
+            # Kata yang menunjukkan kemudahan
+            'gampang', 'simple', 'user friendly', 'intuitif', 'mudah dipahami',
+            'tidak ribet', 'straightforward', 'accessible', 'convenient',
+            
+            # Variasi ejaan positif yang sering muncul
+            'bgus', 'bgs', 'mantep', 'mntp', 'kerennn', 'cooool', 'nicee'
         ]
-        
-        # Negative keywords
+
+        # Negative keywords (diperluas berdasarkan analisis dataset)
         negative_words = [
+            # Kata dasar negatif
             'buruk', 'jelek', 'tidak suka', 'kecewa', 'mengecewakan', 'payah',
             'bad', 'terrible', 'awful', 'worst', 'hate', 'boring', 'membosankan',
             'lambat', 'lelet', 'rusak', 'error', 'bug', 'masalah', 'problem',
-            'susah', 'sulit', 'ribet', 'complicated'
+            'susah', 'sulit', 'ribet', 'complicated',
+            
+            # Kata negatif spesifik untuk layanan transportasi/delivery
+            'lama', 'telat', 'terlambat', 'delay', 'pending', 'hang', 'freeze',
+            'crash', 'eror', 'gangguan', 'trouble', 'issue', 'glitch',
+            'loading', 'stuck', 'macet', 'lemot', 'slow', 'not working',
+            
+            # Kata yang menunjukkan ketidakpuasan layanan
+            'cancel', 'batal', 'dibatalkan', 'reject', 'ditolak', 'gagal',
+            'failed', 'unsuccessful', 'tidak berhasil', 'tidak bisa', 'gabisa',
+            'ga bisa', 'gak bisa', 'cannot', 'unable', 'impossible',
+            
+            # Kata yang menunjukkan masalah teknis
+            'keluar sendiri', 'force close', 'restart', 'uninstall', 'reinstall',
+            'update gagal', 'koneksi terputus', 'no signal', 'offline',
+            'maintenance', 'down', 'server error', 'timeout', 'expired',
+            
+            # Kata yang menunjukkan ketidakpuasan finansial
+            'mahal', 'expensive', 'overpriced', 'kemahalan', 'boros', 'rugi',
+            'loss', 'kerugian', 'tidak worth it', 'not worth', 'sia-sia',
+            'percuma', 'buang-buang', 'wasteful', 'money wasting',
+            
+            # Kata yang menunjukkan kesulitan penggunaan
+            'rumit', 'complex', 'confusing', 'membingungkan', 'tidak jelas',
+            'unclear', 'ambiguous', 'tidak mudah', 'sukar', 'challenging',
+            'difficult', 'hard to use', 'user unfriendly',
+            
+            # Kata yang menunjukkan ketidakpuasan driver/service
+            'tidak ramah', 'kasar', 'rude', 'impolite', 'tidak sopan',
+            'arrogant', 'sombong', 'jutek', 'galak', 'unfriendly',
+            'tidak profesional', 'unprofessional', 'asal-asalan', 'sembarangan',
+            
+            # Kata yang menunjukkan masalah kualitas
+            'kualitas rendah', 'poor quality', 'tidak berkualitas', 'inferior',
+            'tidak memuaskan', 'unsatisfactory', 'disappointing', 'frustrating',
+            'annoying', 'menjengkelkan', 'menyebalkan', 'mengganggu',
+            
+            # Kata yang menunjukkan masalah availability
+            'tidak tersedia', 'unavailable', 'kosong', 'habis', 'out of stock',
+            'tidak ada', 'missing', 'hilang', 'lost', 'tidak ditemukan',
+            'not found', 'empty', 'void', 'null',
+            
+            # Variasi ejaan negatif yang sering muncul
+            'jlek', 'jelek banget', 'payahhh', 'burruk', 'ga jelas',
+            'gajelas', 'gabener', 'parah', 'kacau', 'berantakan',
+            'amburadul', 'ngaco', 'tolol', 'bodoh', 'stupid', 'idiot',
+            
+            # Kata yang menunjukkan ketidakstabilan
+            'tidak stabil', 'unstable', 'inconsistent', 'tidak konsisten',
+            'berubah-ubah', 'fluktuatif', 'naik turun', 'unpredictable',
+            
+            # Kata yang menunjukkan ketidakamanan
+            'tidak aman', 'unsafe', 'berbahaya', 'dangerous', 'risky',
+            'berisiko', 'mencurigakan', 'suspicious', 'questionable',
+            
+            # Kata yang menunjukkan ketidakpercayaan
+            'tidak percaya', 'distrust', 'curiga', 'doubt', 'ragu',
+            'skeptical', 'tidak yakin', 'unsure', 'uncertain'
         ]
         
         # Count positive and negative words

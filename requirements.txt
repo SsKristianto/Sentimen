@@ -10,11 +10,11 @@ joblib>=1.2.0
 
 # Text Processing
 nltk>=3.8.1
-pip install https://github.com/har07/PySastrawi.git 
+git+https://github.com/har07/PySastrawi.git 
 # Sastrawi>=1.0.1
 
 # Word Embeddings
-pip install https://github.com/RaRe-Technologies/gensim.git
+git+https://github.com/har07/PySastrawi.git
 
 # Visualization
 matplotlib>=3.5.0

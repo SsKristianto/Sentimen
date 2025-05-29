@@ -14,7 +14,7 @@ git+https://github.com/har07/PySastrawi.git
 # Sastrawi>=1.0.1
 
 # Word Embeddings
-git+https://github.com/har07/PySastrawi.git
+git+https://github.com/RaRe-Technologies/gensim.git
 
 # Visualization
 matplotlib>=3.5.0

@@ -1,0 +1,110 @@
+{
+  "system_info": {
+    "platform": "Windows",
+    "platform_version": "10.0.26100",
+    "python_version": "3.12.10",
+    "architecture": "64bit",
+    "processor": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+    "cpu_count": 12,
+    "memory_total": {
+      "total_gb": 15.36,
+      "available_gb": 5.79,
+      "percent_used": 62.3
+    },
+    "timestamp": "2025-05-29T13:57:14.542055"
+  },
+  "installation_log": [
+    {
+      "package": "streamlit",
+      "status": "already_installed",
+      "category": "core",
+      "timestamp": "2025-05-29T13:57:15.273762"
+    },
+    {
+      "package": "pandas",
+      "status": "already_installed",
+      "category": "core",
+      "timestamp": "2025-05-29T13:57:16.015686"
+    },
+    {
+      "package": "numpy",
+      "status": "already_installed",
+      "category": "core",
+      "timestamp": "2025-05-29T13:57:16.017128"
+    },
+    {
+      "package": "matplotlib",
+      "status": "already_installed",
+      "category": "core",
+      "timestamp": "2025-05-29T13:57:16.177279"
+    },
+    {
+      "package": "seaborn",
+      "status": "already_installed",
+      "category": "core",
+      "timestamp": "2025-05-29T13:57:17.900759"
+    },
+    {
+      "package": "plotly",
+      "status": "already_installed",
+      "category": "core",
+      "timestamp": "2025-05-29T13:57:17.901282"
+    },
+    {
+      "package": "wordcloud",
+      "status": "already_installed",
+      "category": "core",
+      "timestamp": "2025-05-29T13:57:17.923658"
+    },
+    {
+      "package": "scikit-learn",
+      "status": "installed",
+      "category": "core",
+      "timestamp": "2025-05-29T13:57:20.851592"
+    },
+    {
+      "package": "tensorflow",
+      "status": "already_installed",
+      "category": "core",
+      "timestamp": "2025-05-29T13:57:26.092292"
+    },
+    {
+      "package": "nltk",
+      "status": "already_installed",
+      "category": "nlp",
+      "timestamp": "2025-05-29T13:57:27.182076"
+    },
+    {
+      "package": "sastrawi",
+      "status": "installed",
+      "category": "nlp",
+      "timestamp": "2025-05-29T13:57:33.211565"
+    },
+    {
+      "package": "gensim",
+      "status": "already_installed",
+      "category": "nlp",
+      "timestamp": "2025-05-29T13:57:33.654924"
+    },
+    {
+      "package": "psutil",
+      "status": "already_installed",
+      "category": "optional",
+      "timestamp": "2025-05-29T13:57:33.656401"
+    },
+    {
+      "package": "joblib",
+      "status": "already_installed",
+      "category": "optional",
+      "timestamp": "2025-05-29T13:57:33.656401"
+    },
+    {
+      "package": "pillow",
+      "status": "installed",
+      "category": "optional",
+      "timestamp": "2025-05-29T13:57:37.534731"
+    }
+  ],
+  "startup_time": 24.163589000701904,
+  "status": "completed"
+}

@@ -1,0 +1,19 @@
+{
+  "filename": "processed_dataset_opt_10000_20250529_192216.csv",
+  "rows": 9807,
+  "columns": [
+    "userName",
+    "content",
+    "score",
+    "at",
+    "appVersion",
+    "sentiment",
+    "processed_content"
+  ],
+  "sentiment_distribution": {
+    "positive": 7114,
+    "negative": 2450,
+    "neutral": 243
+  },
+  "processed_date": "2025-05-29T19:22:16.859520"
+}

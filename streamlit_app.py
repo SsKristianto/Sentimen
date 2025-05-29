@@ -1670,12 +1670,21 @@ elif selected_menu == "ℹ️ Tentang":
     
     st.markdown("""
     ## 🎯 Sistem Analisis Sentimen Indonesia
+
+    ### Dibuat Oleh Kelompok 3 :
+    #### Akhmad Aditya Rachman  223020503085
+    #### Natalio Valentino  223020503115       
+    #### Adi Kristianto  223020503127      
+    #### Achmad Kahlil Gibran  223020503137    
+    #### Aditya Heru Saputra  223020503149        
+    #### Andika Fikri Maulana  223020503153    
+    #### Muhammad Afrizal  223020503159       
     
     ### 📋 Deskripsi
     Sistem ini merupakan aplikasi web untuk melakukan analisis sentimen pada teks berbahasa Indonesia secara otomatis. 
     Sistem menggunakan kombinasi teknik machine learning tradisional dan deep learning untuk mengklasifikasikan 
     sentimen teks menjadi tiga kategori: **Positif**, **Negatif**, dan **Netral**.
-    
+
     ### 🔧 Teknologi yang Digunakan
     
     #### Preprocessing:
@@ -1770,10 +1779,8 @@ elif selected_menu == "ℹ️ Tentang":
     st.subheader("📋 Version Information")
     
     version_info = {
-        "System Version": "2.0",
-        "Release Date": "2025",
-        "Key Features": "Balanced Training, Enhanced Performance, Better UX",
-        "Compatibility": "Backward Compatible"
+        "System Version": "1.0",
+        "Release Date": "29-Mei-2025",
     }
     
     for key, value in version_info.items():
@@ -1785,6 +1792,5 @@ st.markdown("""
 <div style='text-align: center; color: #666; padding: 2rem 0;'>
     <p>🎯 Sistem Analisis Sentimen Indonesia</p>
     <p>Enhanced with ⚡ Performance Optimization & 🎯 Improved Accuracy</p>
-    <p>© 2024 - Semua hak dilindungi</p>
 </div>
 """, unsafe_allow_html=True)

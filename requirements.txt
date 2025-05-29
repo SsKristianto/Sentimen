@@ -10,10 +10,10 @@ joblib>=1.2.0
 
 # Text Processing
 nltk>=3.8.1
-Sastrawi>=1.0.1
+Sastrawi==1.0.1
 
 # Word Embeddings
-gensim>=4.2.0
+gensim==4.2.0
 
 # Visualization
 matplotlib>=3.5.0

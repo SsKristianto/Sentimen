@@ -510,7 +510,7 @@ elif selected_menu == "⚙️ Preprocessing Data":
     
     with col1:
         sample_options = {
-            "Semua Data": min(total_data, 200000),  # Cap at 50k for performance
+            "Semua Data": min(total_data, 225002),
             "25,000 Data": min(25000, total_data),
             "10,000 Data": min(10000, total_data),
             "5,000 Data": min(5000, total_data),
